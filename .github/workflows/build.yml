@@ -21,7 +21,7 @@ jobs:
       - name: Build Tweak Package
         run: |
           export THEOS=$HOME/theos
-          make package FINALPACKAGE=1
+          make package THEOS=$HOME/theos FINALPACKAGE=1
 
       - name: Upload Deb Artifact
         uses: actions/upload-artifact@v4
