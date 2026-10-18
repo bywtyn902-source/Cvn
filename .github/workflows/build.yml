@@ -1,5 +1,4 @@
 - name: Build Tweak Package
   run: |
     export THEOS=$HOME/theos
-    export THEOS_MAKE_PATH=$THEOS/makefiles
     make package FINALPACKAGE=1
