@@ -8,18 +8,29 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Setup Theos & SDK
-      uses: Randomblock1/theos-action@v1
-      with:
-        theos-dir: 'theos'
+    - name: Setup Theos & SDK (Manual)
+      run: |
+        # Clone Theos
+        git clone --recursive https://github.com/theos/theos.git $HOME/theos
+        
+        # Download iOS SDK
+        curl -L https://github.com/theos/sdks/archive/master.zip -o /tmp/master.zip
+        unzip /tmp/master.zip -d /tmp/
+        mkdir -p $HOME/theos/sdks
+        mv /tmp/sdks-master/*.sdk $HOME/theos/sdks/
+        
+        # Cleanup
+        rm /tmp/master.zip
+        rm -rf /tmp/sdks-master
 
     - name: Build Tweak Package
       run: |
-        export THEOS=${{ github.workspace }}/theos
+        export THEOS=$HOME/theos
         make package FINALPACKAGE=1
 
     - name: Upload Deb Artifact
