@@ -1,4 +1,32 @@
-- name: Build Tweak Package
-  run: |
-    export THEOS=$HOME/theos
-    make package FINALPACKAGE=1
+name: Build Tweak
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Setup Theos & SDK
+      uses: Randomblock1/theos-action@v1
+      with:
+        theos-dir: 'theos'
+
+    - name: Build Tweak Package
+      run: |
+        export THEOS=${{ github.workspace }}/theos
+        make package FINALPACKAGE=1
+        
+    - name: Upload Deb Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: AxiomDeltaRoblox-Deb
+        path: .theos/_/DEBIAN/../..//packages/*.deb
