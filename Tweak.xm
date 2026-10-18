@@ -4,11 +4,24 @@
 #import <objc/runtime.h>
 
 static dispatch_source_t clickTimer = nil;
-static CGPoint targetPoint = CGPointMake(350, 700); // موقع افتراضي (يمين تحت)
+static CGPoint targetPoint = CGPointMake(350, 700); 
 
-// دالة محاكاة اللمس
+// دالة حديثة لجلب النافذة بدون أخطاء التحذير
+UIWindow *getKeyWindow() {
+    if (@available(iOS 13.0, *)) {
+        for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
+            if (scene.activationState == UISceneActivationStateForegroundActive && [scene isKindOfClass:[UIWindowScene class]]) {
+                for (UIWindow *window in ((UIWindowScene *)scene).windows) {
+                    if (window.isKeyWindow) return window;
+                }
+            }
+        }
+    }
+    return [UIApplication sharedApplication].keyWindow;
+}
+
 void SimulateTouch(CGPoint point) {
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    UIWindow *window = getKeyWindow();
     if (!window) return;
     
     UITouch *touch = [[UITouch alloc] init];
@@ -24,7 +37,6 @@ void SimulateTouch(CGPoint point) {
     [window sendEvent:event];
 }
 
-// ================= الواجهة =================
 @interface AxiomClicker : NSObject <UIGestureRecognizerDelegate>
 @property (nonatomic, strong) UIView *targetDot;
 + (instancetype)sharedInstance;
@@ -46,10 +58,9 @@ void SimulateTouch(CGPoint point) {
 }
 
 - (void)setupUI {
-    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    UIWindow *keyWindow = getKeyWindow();
     if (!keyWindow) return;
 
-    // زر القائمة العائم
     UIButton *floatButton = [UIButton buttonWithType:UIButtonTypeCustom];
     floatButton.frame = CGRectMake(50, 100, 50, 50);
     floatButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:0.85];
@@ -60,7 +71,6 @@ void SimulateTouch(CGPoint point) {
     [floatButton addTarget:self action:@selector(toggleMenu:) forControlEvents:UIControlEventTouchUpInside];
     [keyWindow addSubview:floatButton];
     
-    // نقطة التصويب الحمراء (تقدر تسحبها)
     self.targetDot = [[UIView alloc] initWithFrame:CGRectMake(targetPoint.x - 15, targetPoint.y - 15, 30, 30)];
     self.targetDot.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.5];
     self.targetDot.layer.cornerRadius = 15;
@@ -80,7 +90,7 @@ void SimulateTouch(CGPoint point) {
 }
 
 - (void)toggleMenu:(UIButton *)sender {
-    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    UIWindow *keyWindow = getKeyWindow();
     UIView *existingMenu = [keyWindow viewWithTag:888899];
     if (existingMenu) { [existingMenu removeFromSuperview]; return; }
 
@@ -124,11 +134,10 @@ void SimulateTouch(CGPoint point) {
 }
 
 - (void)toggleAutoClick:(UISwitch *)sender {
-    self.targetDot.hidden = !sender.isOn; // نخفي/نظهر النقطة الحمراء
+    self.targetDot.hidden = !sender.isOn;
     
     if (sender.isOn) {
         clickTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-        // 0.01 يعني 100 ضغطة في الثانية! سرعة خارقة
         dispatch_source_set_timer(clickTimer, DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC, 0); 
         dispatch_source_set_event_handler(clickTimer, ^{
             SimulateTouch(targetPoint);
