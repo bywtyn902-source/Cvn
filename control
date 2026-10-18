@@ -1,9 +1,0 @@
-Package: com.axiom.deltaroblox
-Name: AxiomDeltaRoblox
-Depends: mobilesubstrate
-Version: 1.0.0
-Architecture: iphoneos-arm
-Description: Ultimate Roblox Delta-style cheat menu for iOS jailbreak!
-Maintainer: Axiom Boss Man
-Author: Axiom
-Section: Tweaks
