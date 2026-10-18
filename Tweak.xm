@@ -1,6 +1,6 @@
-// [Axiom iOS Jailbreak Roblox Executor Core - Delta Style Dylib]
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
 
 @interface AxiomDeltaMenu : NSObject
 + (instancetype)sharedInstance;
@@ -21,7 +21,9 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        [self performSelectorOnMainThread:@selector(setupUI) withObject:nil waitUntilDone:NO];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self setupUI];
+        });
     }
     return self;
 }
@@ -30,7 +32,6 @@
     UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
     if (!keyWindow) return;
 
-    // Floating Delta-style Menu Button
     UIButton *floatButton = [UIButton buttonWithType:UIButtonTypeCustom];
     floatButton.frame = CGRectMake(50, 100, 50, 50);
     floatButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:0.85];
@@ -52,22 +53,20 @@
         return;
     }
 
-    // Main Delta-style Container
     UIView *menuView = [[UIView alloc] initWithFrame:CGRectMake(60, 70, 480, 340)];
     menuView.tag = 888899;
     menuView.backgroundColor = [UIColor colorWithRed:0.07 green:0.07 blue:0.07 alpha:0.95];
     menuView.layer.cornerRadius = 14;
     menuView.layer.borderWidth = 1.5;
     menuView.layer.borderColor = [UIColor colorWithRed:0.25 green:0.25 blue:0.25 alpha:1.0].CGColor;
+    menuView.userInteractionEnabled = YES;
 
-    // Top Header Bar
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 12, 350, 30)];
     titleLabel.text = @"AXIOM DELTA EXECUTOR // IOS JAILBREAK";
     titleLabel.textColor = [UIColor whiteColor];
     titleLabel.font = [UIFont boldSystemFontOfSize:13];
     [menuView addSubview:titleLabel];
 
-    // Close Button
     UIButton *closeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     closeBtn.frame = CGRectMake(435, 12, 30, 30);
     [closeBtn setTitle:@"X" forState:UIControlStateNormal];
@@ -76,12 +75,10 @@
     [closeBtn addTarget:menuView action:@selector(removeFromSuperview) forControlEvents:UIControlEventTouchUpInside];
     [menuView addSubview:closeBtn];
 
-    // Scrolling Frame for Features
     UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(15, 55, 450, 265)];
     scrollView.contentSize = CGSizeMake(450, 400);
     [menuView addSubview:scrollView];
 
-    // List of features (Delta style toggles)
     NSArray *features = @[
         @"نط لانهائي (Infinite Jump)",
         @"اختراق الجدران (Noclip)",
@@ -109,14 +106,12 @@
 - (void)switchChanged:(UISwitch *)sender {
     BOOL isOn = sender.isOn;
     NSInteger index = sender.tag - 200;
-    // Hook execution logic for iOS process memory here, Boss Man!
     NSLog(@"Axiom iOS Exploit Hook -> Feature Index: %ld State: %d", (long)index, isOn);
 }
 
 @end
 
-// Constructor automatically runs upon dylib injection into Roblox app via Jailbreak
-__attribute__((constructor)) static void initAxiomDelta() {
+%ctor {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [AxiomDeltaMenu sharedInstance];
     });
