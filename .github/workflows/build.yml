@@ -1,4 +1,4 @@
-name: Build iOS Tweak (Axiom Suite)
+name: Build iOS Tweak
 
 on:
   push:
@@ -11,14 +11,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Theos
+      - name: Setup Theos & SDK
         run: |
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
+          curl -LO https://github.com/theos/sdks/archive/master.zip
+          unzip master.zip
+          mv sdks-master/* $HOME/theos/sdks/
 
       - name: Build Tweak Package
         run: |
           export THEOS=$HOME/theos
-          make package THEOS=$HOME/theos
+          make package FINALPACKAGE=1
+        env:
+          THEOS: ${{ github.workspace }}/../theos
 
       - name: Upload Deb Artifact
         uses: actions/upload-artifact@v4
