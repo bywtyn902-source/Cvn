@@ -1,4 +1,4 @@
-name: Build Tweak
+name: Build TikTok Tweak
 
 on:
   push:
@@ -8,33 +8,27 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Setup Theos & SDK (Manual)
+    - name: Setup Theos & SDK
       run: |
-        # Clone Theos
         git clone --recursive https://github.com/theos/theos.git $HOME/theos
-        
-        # Download iOS SDK
         curl -L https://github.com/theos/sdks/archive/master.zip -o /tmp/master.zip
         unzip /tmp/master.zip -d /tmp/
         mkdir -p $HOME/theos/sdks
         mv /tmp/sdks-master/*.sdk $HOME/theos/sdks/
-        
-        # Cleanup
         rm /tmp/master.zip
         rm -rf /tmp/sdks-master
 
-    - name: Build Tweak Package
+    - name: Build Tweak (Dylib)
       run: |
         export THEOS=$HOME/theos
-        make package FINALPACKAGE=1
+        make
 
-    - name: Upload Deb Artifact
+    - name: Upload Dylib Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: AxiomDeltaRoblox-Deb
-        path: packages/*.deb
+        name: AxiomTikTok-Dylib
+        path: .theos/obj/**/*.dylib
