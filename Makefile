@@ -1,6 +1,7 @@
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = your_tweak_name
-your_tweak_name_FILES = Tweak.xm
+TWEAK_NAME = AxiomDeltaRoblox
+AxiomDeltaRoblox_FILES = Tweak.xm
+AxiomDeltaRoblox_FRAMEWORKS = UIKit Foundation
 
-include $(THEOS_MAKE_PATH)/tweak.mk
+include $(THEOS)/makefiles/tweak.mk
