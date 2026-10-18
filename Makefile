@@ -6,7 +6,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = AxiomTikTok
 AxiomTikTok_FILES = Tweak.xm
-AxiomTikTok_CFLAGS = -fobjc-arc
+AxiomTikTok_CFLAGS = -fobjc-arc -Wno-deprecated-declarations
 AxiomTikTok_FRAMEWORKS = UIKit Foundation
 AxiomTikTok_LDFLAGS = -Wl,-undefined,dynamic_lookup
 
