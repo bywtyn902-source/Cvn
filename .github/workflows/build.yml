@@ -6,16 +6,18 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container:
-      image: dave1482/theos:latest
+    runs-on: macos-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git $HOME/theos
+
       - name: Build Tweak Package
         run: |
-          export THEOS=/opt/theos
+          export THEOS=$HOME/theos
           make package
 
       - name: Upload Deb Artifact
